@@ -25,10 +25,10 @@
 
             <ImageView
                 android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:src="@android:drawable/ic_menu_sort_by_size"
-                app:tint="#00C49A"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
+                android:src="@drawable/refrigerator"
+                app:tint="#00C49A"
                 tools:ignore="ContentDescription" />
 
             <TextView
@@ -62,7 +62,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_gravity="center"
-                    android:src="@android:drawable/ic_menu_add"
+                    android:src="@drawable/person"
                     app:tint="#00C49A"
                     tools:ignore="ContentDescription" />
             </androidx.cardview.widget.CardView>

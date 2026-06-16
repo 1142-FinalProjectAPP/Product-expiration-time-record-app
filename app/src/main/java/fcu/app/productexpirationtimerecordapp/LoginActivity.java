@@ -67,6 +67,24 @@ public class LoginActivity extends AppCompatActivity {
     );
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        // 取得目前 Firebase 記錄的使用者
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        // 如果 currentUser 不是空的，代表之前已經登入過了，而且還沒點過登出
+        if (currentUser != null) {
+            // 直接跳轉到主畫面 MainActivity
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+
+            // 結束目前的登入畫面，避免按返回鍵又跑回來
+            finish();
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);

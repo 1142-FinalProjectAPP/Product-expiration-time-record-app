@@ -1,6 +1,7 @@
 package fcu.app.productexpirationtimerecordapp;
 
 import android.os.Bundle;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,5 +21,13 @@ public class GroupManagementActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+
+        // 找到返回按鈕
+        ImageView btnBack = findViewById(R.id.btnBack);
+
+        // 設定點擊事件，結束這個畫面
+        btnBack.setOnClickListener(v -> finish());
     }
+
 }

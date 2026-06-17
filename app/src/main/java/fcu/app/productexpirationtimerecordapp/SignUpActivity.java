@@ -33,6 +33,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -134,10 +138,19 @@ public class SignUpActivity extends AppCompatActivity {
                                                     @Override
                                                     public void onComplete(@NonNull Task<Void> updateTask) {
                                                         if (updateTask.isSuccessful()) {
-                                                            // 名稱也更新成功後，才跳轉畫面
-                                                            Toast.makeText(SignUpActivity.this, "註冊成功，歡迎 " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
-                                                            startActivity(new Intent(SignUpActivity.this, MainActivity.class));
-                                                            finish();
+
+                                                            // 🌟【這裡新增】：同步將用戶名稱與 Email 寫入 Firestore 的 Users 集合中
+                                                            Map<String, Object> userData = new HashMap<>();
+                                                            userData.put("name", name);
+                                                            userData.put("email", email);
+
+                                                            FirebaseFirestore.getInstance().collection("Users").document(user.getUid())
+                                                                    .set(userData)
+                                                                    .addOnSuccessListener(aVoid -> {
+                                                                        Toast.makeText(SignUpActivity.this, "註冊成功！", Toast.LENGTH_SHORT).show();
+                                                                        startActivity(new Intent(SignUpActivity.this, MainActivity.class));
+                                                                        finish();
+                                                                    });
                                                         }
                                                     }
                                                 });

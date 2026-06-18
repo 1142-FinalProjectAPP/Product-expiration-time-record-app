@@ -29,7 +29,7 @@ public class SettingFragment extends Fragment {
 
     private TextView tvUserName, tvUserEmail;
     private MaterialButton btnLogout;
-    private LinearLayout btnGroupManagement;
+    private LinearLayout btnGroupManagement, btnNotice;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -86,6 +86,8 @@ public class SettingFragment extends Fragment {
         tvUserEmail = view.findViewById(R.id.tvUserEmail);
         btnLogout = view.findViewById(R.id.btnLogout);
         btnGroupManagement = view.findViewById(R.id.btnGroupManagement);
+        btnNotice = view.findViewById(R.id.btnNotifications);
+
 
         // 2. 抓取 Firebase 目前登入的使用者資料
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -105,6 +107,11 @@ public class SettingFragment extends Fragment {
         // 3. 群組管理按鈕點擊事件：跳轉至 GroupManagementActivity
         btnGroupManagement.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), GroupManagementActivity.class);
+            startActivity(intent);
+        });
+
+        btnNotice.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), NoticeActivity.class);
             startActivity(intent);
         });
 

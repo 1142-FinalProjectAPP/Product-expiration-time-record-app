@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
         Fragment inventoryFragment = InventoryFragment.newInstance("", "");
-        Fragment addFragment = AddFragment.newInstance("", "");
+        Fragment addFragment = new AddFragment();
         Fragment remindFragment = RemindFragment.newInstance("", "");
         Fragment settingFragment = SettingFragment.newInstance("", "");
 

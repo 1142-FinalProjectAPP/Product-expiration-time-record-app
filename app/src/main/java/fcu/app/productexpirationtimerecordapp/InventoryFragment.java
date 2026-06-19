@@ -102,32 +102,28 @@ public class InventoryFragment extends Fragment {
 
         PieDataSet dataSet = new PieDataSet(entries, "");
 
-        // 🎨 每個分類顏色（清爽風格）
         ArrayList<Integer> colors = new ArrayList<>();
-        colors.add(Color.parseColor("#4CAF50")); // 蔬菜 - 綠
-        colors.add(Color.parseColor("#9E9E9E")); // 其他 - 灰
-        colors.add(Color.parseColor("#FF9800")); // 飲料 - 橘
-        colors.add(Color.parseColor("#2196F3")); // 乳製品 - 藍
+        colors.add(Color.parseColor("#4CAF50")); 
+        colors.add(Color.parseColor("#9E9E9E"));
+        colors.add(Color.parseColor("#FF9800")); 
+        colors.add(Color.parseColor("#2196F3")); 
 
         dataSet.setColors(colors);
 
-        // ✨ 圓餅間距 & 圓角感
         dataSet.setSliceSpace(2f);
 
         PieData data = new PieData(dataSet);
 
-        // 🔤 字體變小 + 黑色
         data.setValueTextSize(10f);
         data.setValueTextColor(Color.BLACK);
 
         pieChart.setData(data);
 
-        // 🎯 中心文字（可選）
+
         pieChart.setCenterText("庫存分佈");
         pieChart.setCenterTextSize(14f);
         pieChart.setCenterTextColor(Color.BLACK);
 
-        // 🎯 基本美化
         pieChart.setHoleRadius(55f);
         pieChart.setTransparentCircleRadius(60f);
 

@@ -1,0 +1,105 @@
+{
+  "project_info": {
+    "project_number": "126715314555",
+    "project_id": "app-4a444",
+    "storage_bucket": "app-4a444.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126715314555:android:fa7a984f03daeb233b7dde",
+        "android_client_info": {
+          "package_name": "fcu.app.firebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "126715314555-bngjjechqgni0ab3rpe5ciissc8d6k0e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZA25lMkLptP_KhGMT9LbDE7Ammn5ducI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "126715314555-bngjjechqgni0ab3rpe5ciissc8d6k0e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126715314555:android:490429855458f2893b7dde",
+        "android_client_info": {
+          "package_name": "fcu.app.food"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "126715314555-bngjjechqgni0ab3rpe5ciissc8d6k0e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZA25lMkLptP_KhGMT9LbDE7Ammn5ducI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "126715314555-bngjjechqgni0ab3rpe5ciissc8d6k0e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126715314555:android:e18c5b817037c93b3b7dde",
+        "android_client_info": {
+          "package_name": "fcu.app.productexpirationtimerecordapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "126715314555-garm6u9g4fuuaedubl5apf0b5q7cdhue.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fcu.app.productexpirationtimerecordapp",
+            "certificate_hash": "b5cd6545e9b2d0e668f2992ba4894dc89053a287"
+          }
+        },
+        {
+          "client_id": "126715314555-bngjjechqgni0ab3rpe5ciissc8d6k0e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZA25lMkLptP_KhGMT9LbDE7Ammn5ducI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "126715314555-bngjjechqgni0ab3rpe5ciissc8d6k0e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

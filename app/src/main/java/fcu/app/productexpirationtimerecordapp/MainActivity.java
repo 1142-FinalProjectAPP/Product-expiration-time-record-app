@@ -29,11 +29,13 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+
+
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
-        Fragment inventoryFragment = InventoryFragment.newInstance("", "");
-        Fragment addFragment = AddFragment.newInstance("", "");
-        Fragment remindFragment = RemindFragment.newInstance("", "");
-        Fragment settingFragment = SettingFragment.newInstance("", "");
+        Fragment inventoryFragment = new InventoryFragment();
+        Fragment addFragment = new AddFragment();
+        Fragment remindFragment = new RemindFragment();
+        Fragment settingFragment = new SettingFragment();
 
         setCurrentFragment(inventoryFragment);
 

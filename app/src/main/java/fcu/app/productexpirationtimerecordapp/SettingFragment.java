@@ -19,6 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,7 +29,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class SettingFragment extends Fragment {
 
     private TextView tvUserName, tvUserEmail;
-    private MaterialButton btnLogout;
+    private MaterialButton btnLogout, btnEditProfile;
     private LinearLayout btnGroupManagement, btnNotice;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -87,6 +88,7 @@ public class SettingFragment extends Fragment {
         btnLogout = view.findViewById(R.id.btnLogout);
         btnGroupManagement = view.findViewById(R.id.btnGroupManagement);
         btnNotice = view.findViewById(R.id.btnNotifications);
+        btnEditProfile = view.findViewById(R.id.btnEditProfile);
 
 
         // 2. 抓取 Firebase 目前登入的使用者資料
@@ -115,6 +117,12 @@ public class SettingFragment extends Fragment {
             startActivity(intent);
         });
 
+        btnEditProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+            startActivity(intent);
+        });
+
+
         // 4. 登出按鈕事件
         btnLogout.setOnClickListener(v -> {
             // Firebase 登出
@@ -134,5 +142,42 @@ public class SettingFragment extends Fragment {
                 startActivity(intent);
             });
         });
+    }
+    /**
+     * 🌟 關鍵升級：將讀取資料放在 onResume
+     * 這樣從 EditProfileActivity 修改完返回時，Fragment 會重新執行這裡，立刻顯示新名字！
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadUserData();
+    }
+
+    /**
+     * 抓取最新的使用者資料並更新介面
+     */
+    private void loadUserData() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            // 顯示 Email
+            tvUserEmail.setText(currentUser.getEmail());
+
+            // 優先從 Firestore 抓取最新的名字
+            FirebaseFirestore.getInstance().collection("Users").document(currentUser.getUid()).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists() && documentSnapshot.getString("name") != null) {
+                            // 成功從資料庫抓到名字
+                            tvUserName.setText(documentSnapshot.getString("name"));
+                        } else {
+                            // 如果資料庫沒有，退而求其次抓 Auth 裡面的名字
+                            String displayName = currentUser.getDisplayName();
+                            if (displayName != null && !displayName.isEmpty()) {
+                                tvUserName.setText(displayName);
+                            } else {
+                                tvUserName.setText("FreshKeep 使用者");
+                            }
+                        }
+                    });
+        }
     }
 }

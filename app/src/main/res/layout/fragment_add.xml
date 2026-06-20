@@ -36,41 +36,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="使用相機快速記錄食材"
+                    android:text="掃描商品條碼快速帶入名稱"
                     android:textColor="#666666"
                     android:textSize="14sp" />
 
-                <LinearLayout
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnScanBarcode"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnScanBarcode"
-                        android:layout_width="0dp"
-                        android:layout_height="56dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="#00C49A"
-                        android:text="掃描條碼"
-                        android:textColor="#FFFFFF"
-                        app:cornerRadius="28dp" />
-
-                    <Space
-                        android:layout_width="12dp"
-                        android:layout_height="1dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnCamera"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="56dp"
-                        android:layout_weight="1"
-                        android:text="AI 拍照"
-                        android:textColor="#00C49A"
-                        app:cornerRadius="28dp"
-                        app:strokeColor="#00C49A" />
-
-                </LinearLayout>
+                    android:layout_height="56dp"
+                    android:layout_marginTop="20dp"
+                    android:backgroundTint="#00C49A"
+                    android:text="掃描條碼"
+                    android:textColor="#FFFFFF"
+                    app:cornerRadius="28dp" />
 
             </LinearLayout>
 
@@ -137,7 +115,6 @@
                 android:layout_height="wrap_content"
                 android:text="乳製品"
                 android:checkable="true"
-                android:checked="true"
                 app:chipStrokeColor="#00C49A"
                 app:chipStrokeWidth="1dp" />
 
@@ -147,9 +124,18 @@
                 android:layout_height="wrap_content"
                 android:text="肉類"
                 android:checkable="true"
-                android:checked="true"
                 app:chipStrokeColor="#00C49A"
                 app:chipStrokeWidth="1dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipAddCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+ 新增"
+                android:checkable="false"
+                android:textColor="#00C49A"
+                app:chipBackgroundColor="#E8F9F5"
+                app:chipStrokeWidth="0dp" />
 
         </com.google.android.material.chip.ChipGroup>
 

@@ -1,64 +1,138 @@
 package fcu.app.productexpirationtimerecordapp;
 
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link InventoryFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import android.widget.TextView;
+import android.widget.ProgressBar;
+
+import com.google.android.material.button.MaterialButton;
+
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import android.graphics.Color;
+
+import java.util.ArrayList;
+
 public class InventoryFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private View rootView;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private TextView tvVegPercent, tvOtherPercent, tvDrinkPercent, tvDairyPercent;
+    private ProgressBar pbVeg, pbOther, pbDrink, pbDairy;
 
-    public InventoryFragment() {
-        // Required empty public constructor
-    }
+    private MaterialButton btnToggleChart;
+    private View progressContainer;
+    private PieChart pieChart;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment InventoryFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static InventoryFragment newInstance(String param1, String param2) {
-        InventoryFragment fragment = new InventoryFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    private boolean isChartMode = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_inventory, container, false);
+
+        rootView = inflater.inflate(R.layout.fragment_inventory, container, false);
+
+        initView();
+        updateUI();
+        setupChart();
+
+        btnToggleChart.setOnClickListener(v -> toggleView());
+
+        return rootView;
+    }
+
+    private void initView() {
+
+        tvVegPercent = rootView.findViewById(R.id.tvVegPercent);
+        tvOtherPercent = rootView.findViewById(R.id.tvOtherPercent);
+        tvDrinkPercent = rootView.findViewById(R.id.tvDrinkPercent);
+        tvDairyPercent = rootView.findViewById(R.id.tvDairyPercent);
+
+        pbVeg = rootView.findViewById(R.id.pbVeg);
+        pbOther = rootView.findViewById(R.id.pbOther);
+        pbDrink = rootView.findViewById(R.id.pbDrink);
+        pbDairy = rootView.findViewById(R.id.pbDairy);
+
+        btnToggleChart = rootView.findViewById(R.id.btnToggleChart);
+        pieChart = rootView.findViewById(R.id.pieChart);
+        progressContainer = rootView.findViewById(R.id.progressContainer);
+    }
+
+    private void updateUI() {
+
+        setItem(pbVeg, tvVegPercent, 25);
+        setItem(pbOther, tvOtherPercent, 36);
+        setItem(pbDrink, tvDrinkPercent, 22);
+        setItem(pbDairy, tvDairyPercent, 17);
+    }
+
+    private void setItem(ProgressBar bar, TextView text, int value) {
+        bar.setProgress(value);
+        text.setText(value + "%");
+    }
+
+    private void toggleView() {
+
+        isChartMode = !isChartMode;
+
+        if (isChartMode) {
+            progressContainer.setVisibility(View.GONE);
+            pieChart.setVisibility(View.VISIBLE);
+            btnToggleChart.setText("列表");
+        } else {
+            progressContainer.setVisibility(View.VISIBLE);
+            pieChart.setVisibility(View.GONE);
+            btnToggleChart.setText("圓餅圖");
+        }
+    }
+
+    private void setupChart() {
+
+        ArrayList<PieEntry> entries = new ArrayList<>();
+        entries.add(new PieEntry(25f, "蔬菜"));
+        entries.add(new PieEntry(36f, "其他"));
+        entries.add(new PieEntry(22f, "飲料"));
+        entries.add(new PieEntry(17f, "乳製品"));
+
+        PieDataSet dataSet = new PieDataSet(entries, "");
+
+        ArrayList<Integer> colors = new ArrayList<>();
+        colors.add(Color.parseColor("#4CAF50")); 
+        colors.add(Color.parseColor("#9E9E9E"));
+        colors.add(Color.parseColor("#FF9800")); 
+        colors.add(Color.parseColor("#2196F3")); 
+
+        dataSet.setColors(colors);
+
+        dataSet.setSliceSpace(2f);
+
+        PieData data = new PieData(dataSet);
+
+        data.setValueTextSize(10f);
+        data.setValueTextColor(Color.BLACK);
+
+        pieChart.setData(data);
+
+
+        pieChart.setCenterText("庫存分佈");
+        pieChart.setCenterTextSize(14f);
+        pieChart.setCenterTextColor(Color.BLACK);
+
+        pieChart.setHoleRadius(55f);
+        pieChart.setTransparentCircleRadius(60f);
+
+        pieChart.getDescription().setEnabled(false);
+        pieChart.getLegend().setEnabled(true);
+
+        pieChart.setEntryLabelColor(Color.BLACK);
+        pieChart.setEntryLabelTextSize(10f);
+
+        pieChart.invalidate();
     }
 }

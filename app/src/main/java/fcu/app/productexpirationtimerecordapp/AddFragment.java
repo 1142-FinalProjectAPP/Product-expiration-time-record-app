@@ -184,26 +184,22 @@ public class AddFragment extends Fragment {
                     Toast.makeText(requireContext(), "掃描發生錯誤：" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-
-    // 呼叫 Open Food Facts API 查詢商品名稱 (升級除錯版)
+    
     private void fetchProductInfoFromApi(String barcode) {
-        String url = "https://world.openfoodfacts.org/api/v2/product/" + barcode + ".json";
+        // 改用 UPCitemdb 的免費測試 API
+        String url = "https://api.upcitemdb.com/prod/trial/lookup?upc=" + barcode;
 
-        // 在 Android Studio 的 Logcat 印出網址，方便我們追蹤
         Log.d("API_TEST", "正在查詢網址: " + url);
 
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("User-Agent", "ProductExpirationRecordApp/1.0") // 加上這行報上名來
-                .build();
+        // UPCitemdb 不需要特別加 User-Agent，直接發送即可
+        Request request = new Request.Builder().url(url).build();
 
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.e("API_TEST", "網路連線失敗: " + e.getMessage());
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() ->
-                            Toast.makeText(requireContext(), "網路連線失敗：" + e.getMessage(), Toast.LENGTH_LONG).show()
+                            Toast.makeText(requireContext(), "網路連線失敗", Toast.LENGTH_SHORT).show()
                     );
                 }
             }
@@ -211,48 +207,41 @@ public class AddFragment extends Fragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    // (200 OK) 成功抓到資料，維持原本的解析邏輯
                     try {
                         String responseData = response.body().string();
                         JSONObject json = new JSONObject(responseData);
 
-                        if (json.has("status") && json.getInt("status") == 1 && json.has("product")) {
-                            JSONObject product = json.getJSONObject("product");
+                        // UPCitemdb 成功找到資料時，code 會是 "OK"，且 items 陣列會有東西
+                        if (json.has("code") && json.getString("code").equals("OK") && json.has("items")) {
+                            org.json.JSONArray items = json.getJSONArray("items");
 
-                            String productName = product.optString("product_name", "");
-                            if (productName.isEmpty()) productName = product.optString("product_name_zh", "");
-                            if (productName.isEmpty()) productName = product.optString("generic_name", "");
+                            if (items.length() > 0) {
+                                // 抓取陣列中第一個商品的 title
+                                String productName = items.getJSONObject(0).optString("title", "");
 
-                            final String finalName = productName;
-                            if (getActivity() != null) {
-                                getActivity().runOnUiThread(() -> {
-                                    if (!finalName.isEmpty()) {
+                                final String finalName = productName;
+                                if (getActivity() != null) {
+                                    getActivity().runOnUiThread(() -> {
                                         etFoodName.setText(finalName);
                                         Toast.makeText(requireContext(), "已自動帶入：" + finalName, Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        Toast.makeText(requireContext(), "找到商品，但資料庫沒建檔名稱", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                    });
+                                }
+                            } else {
+                                if (getActivity() != null) {
+                                    getActivity().runOnUiThread(() ->
+                                            Toast.makeText(requireContext(), "找不到此商品，請手動輸入", Toast.LENGTH_SHORT).show()
+                                    );
+                                }
+                            }
+                        } else {
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() ->
+                                        Toast.makeText(requireContext(), "找不到此商品，請手動輸入", Toast.LENGTH_SHORT).show()
+                                );
                             }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                    }
-                } else if (response.code() == 404) {
-                    // --- 新增：專門處理 404 找不到商品的情況 ---
-                    Log.d("API_TEST", "資料庫中沒有此商品 (404)");
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() ->
-                                Toast.makeText(requireContext(), "公開資料庫找不到此條碼，請手動輸入名稱", Toast.LENGTH_SHORT).show()
-                        );
-                    }
-                } else {
-                    // 其他真正的伺服器當機或錯誤 (例如 500)
-                    Log.e("API_TEST", "伺服器錯誤碼: " + response.code());
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() ->
-                                Toast.makeText(requireContext(), "伺服器異常 (錯誤碼: " + response.code() + ")", Toast.LENGTH_SHORT).show()
-                        );
                     }
                 }
             }

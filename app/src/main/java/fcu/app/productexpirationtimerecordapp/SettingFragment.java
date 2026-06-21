@@ -1,10 +1,13 @@
 package fcu.app.productexpirationtimerecordapp;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.os.LocaleListCompat;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +33,7 @@ public class SettingFragment extends Fragment {
 
     private TextView tvUserName, tvUserEmail;
     private MaterialButton btnLogout, btnEditProfile;
-    private LinearLayout btnGroupManagement, btnNotice;
+    private LinearLayout btnGroupManagement, btnNotice, btnLanguage, btnAccountSetting;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -89,7 +92,8 @@ public class SettingFragment extends Fragment {
         btnGroupManagement = view.findViewById(R.id.btnGroupManagement);
         btnNotice = view.findViewById(R.id.btnNotifications);
         btnEditProfile = view.findViewById(R.id.btnEditProfile);
-
+        btnLanguage = view.findViewById(R.id.btnLanguage);
+        btnAccountSetting = view.findViewById(R.id.btnAccountSettings);
 
         // 2. 抓取 Firebase 目前登入的使用者資料
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -122,6 +126,12 @@ public class SettingFragment extends Fragment {
             startActivity(intent);
         });
 
+        btnAccountSetting.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), AccountSettingActivity.class);
+            startActivity(intent);
+        });
+
+        btnLanguage.setOnClickListener(v -> showLanguageDialog());
 
         // 4. 登出按鈕事件
         btnLogout.setOnClickListener(v -> {
@@ -179,5 +189,58 @@ public class SettingFragment extends Fragment {
                         }
                     });
         }
+    }
+    /**
+     * 🌟 顯示語言選擇對話框
+     */
+    private void showLanguageDialog() {
+        final String[] listItems = {"繁體中文", "English"};
+
+        // 讀取目前儲存的語言
+        android.content.SharedPreferences prefs = requireActivity().getSharedPreferences("Settings", android.content.Context.MODE_PRIVATE);
+        String currentLang = prefs.getString("My_Lang", "zh");
+        int checkedItem = currentLang.equals("en") ? 1 : 0;
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(requireActivity());
+        mBuilder.setTitle("選擇語言 / Choose Language");
+        mBuilder.setSingleChoiceItems(listItems, checkedItem, (dialog, which) -> {
+            if (which == 0) {
+                setLocale("zh"); // 🌟 強制切換為中文
+            } else if (which == 1) {
+                setLocale("en"); // 🌟 強制切換為英文
+            }
+            dialog.dismiss();
+        });
+
+        AlertDialog mDialog = mBuilder.create();
+        mDialog.show();
+    }
+
+    /**
+     * 🌟 經典必殺技：無視版本，強制覆寫系統語言資源並重啟畫面
+     */
+    private void setLocale(String langCode) {
+        java.util.Locale locale;
+        if (langCode.equals("zh")) {
+            // 如果是中文，強制指定為台灣繁體中文 (對應你的 zh-rTW 資料夾)
+            locale = java.util.Locale.TAIWAN;
+        } else {
+            locale = new java.util.Locale(langCode);
+        }
+
+        java.util.Locale.setDefault(locale);
+        android.content.res.Configuration config = new android.content.res.Configuration();
+        config.setLocale(locale);
+
+        // 強制更新 App 的資源檔
+        requireActivity().getResources().updateConfiguration(config, requireActivity().getResources().getDisplayMetrics());
+
+        // 儲存設定，讓下次打開 App 還是這個語言
+        android.content.SharedPreferences.Editor editor = requireActivity().getSharedPreferences("Settings", android.content.Context.MODE_PRIVATE).edit();
+        editor.putString("My_Lang", langCode);
+        editor.apply();
+
+        // 🌟 最重要的一行：強制重新啟動目前的 Activity，讓新語言瞬間生效！
+        requireActivity().recreate();
     }
 }

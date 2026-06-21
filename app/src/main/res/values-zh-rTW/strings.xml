@@ -1,7 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Product Expiration Time Record App</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="edit_profile">編輯個人資料</string>
     <string name="account_setting">帳號設定</string>
     <string name="language">語言</string>

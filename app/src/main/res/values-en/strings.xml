@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="account_setting">Account Settings</string>
+    <string name="language">Language</string>
+    <string name="language_zh">English</string>
+    <string name="notice_setting">Notifications</string>
+    <string name="group_management">Group Management</string>
+    <string name="logout">Logout</string>
+</resources>

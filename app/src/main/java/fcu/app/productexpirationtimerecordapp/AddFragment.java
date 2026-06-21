@@ -21,6 +21,8 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.mlkit.vision.barcode.common.Barcode;
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanner;
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions;
@@ -184,7 +186,7 @@ public class AddFragment extends Fragment {
                     Toast.makeText(requireContext(), "掃描發生錯誤：" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-    
+
     private void fetchProductInfoFromApi(String barcode) {
         // 改用 UPCitemdb 的免費測試 API
         String url = "https://api.upcitemdb.com/prod/trial/lookup?upc=" + barcode;
@@ -263,35 +265,45 @@ public class AddFragment extends Fragment {
             return;
         }
 
-        // --- 重大邏輯修改：動態抓取被選中標籤的文字 ---
         int checkedChipId = categoryGroup.getCheckedChipId();
-        // 確保使用者有選擇標籤，且選擇的不是「+ 新增」按鈕本身
         if (checkedChipId == View.NO_ID || checkedChipId == R.id.chipAddCategory) {
             Toast.makeText(requireContext(), "請選擇一個有效的類別", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // 透過被選中的 ID，去抓取該 Chip 元件，然後讀取上面的文字
         Chip selectedChip = categoryGroup.findViewById(checkedChipId);
         String category = selectedChip.getText().toString();
 
         Timestamp expirationDate = new Timestamp(selectedCalendar.getTime());
 
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        // 安全機制：確認使用者真的有登入
+        if (currentUser == null) {
+            Toast.makeText(requireContext(), "請先登入才能新增食材", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userId = currentUser.getUid();
+        // ==========================================
+
         Map<String, Object> inventoryData = new HashMap<>();
         inventoryData.put("productName", productName);
-        inventoryData.put("category", category); // 這裡現在會存入動態產生的文字了！
+        inventoryData.put("category", category);
         inventoryData.put("expirationDate", expirationDate);
         inventoryData.put("quantity", quantity);
+        inventoryData.put("userId", userId); // 將真實的 UID 存入資料庫
 
         btnAddInventory.setEnabled(false);
 
-        db.collection("Inventory")
+        db.collection("inventory")
                 .add(inventoryData)
                 .addOnSuccessListener(documentReference -> {
                     Toast.makeText(requireContext(), "食材已成功加入存貨！", Toast.LENGTH_SHORT).show();
                     btnAddInventory.setEnabled(true);
 
-                    // 重設表單狀態
+                    // 重設表單
                     etFoodName.setText("");
                     quantity = 1;
                     tvQuantity.setText("1");

@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
@@ -60,7 +61,7 @@ public class InventoryFragment extends Fragment {
 
         initView();
         updateUI();
-        setupChart();
+        setupChart(33, 33, 33, 1);
 
         btnToggleChart.setOnClickListener(v -> toggleView());
 
@@ -130,12 +131,23 @@ public class InventoryFragment extends Fragment {
         }
     }
 
-    private void setupChart() {
+    private void setupChart(int veg,
+                            int other,
+                            int drink,
+                            int dairy) {
         ArrayList<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(25f, "蔬菜"));
-        entries.add(new PieEntry(36f, "其他"));
-        entries.add(new PieEntry(22f, "飲料"));
-        entries.add(new PieEntry(17f, "乳製品"));
+
+        if (veg > 0)
+            entries.add(new PieEntry(veg, "蔬菜"));
+
+        if (other > 0)
+            entries.add(new PieEntry(other, "其他"));
+
+        if (dairy > 0)
+            entries.add(new PieEntry(dairy, "乳製品"));
+
+        if (drink > 0)
+            entries.add(new PieEntry(drink, "肉類"));
 
         PieDataSet dataSet = new PieDataSet(entries, "");
 
@@ -149,6 +161,12 @@ public class InventoryFragment extends Fragment {
         dataSet.setSliceSpace(2f);
 
         PieData data = new PieData(dataSet);
+        data.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getPieLabel(float value, PieEntry pieEntry) {
+                return String.valueOf((int) value);
+            }
+        });
         data.setValueTextSize(10f);
         data.setValueTextColor(Color.BLACK);
 
@@ -158,7 +176,8 @@ public class InventoryFragment extends Fragment {
         pieChart.setCenterTextColor(Color.BLACK);
         pieChart.setHoleRadius(55f);
         pieChart.setTransparentCircleRadius(60f);
-        pieChart.getDescription().setEnabled(false);
+        //pieChart.getDescription().setEnabled(false);
+        pieChart.setDrawEntryLabels(false);
         pieChart.getLegend().setEnabled(true);
         pieChart.setEntryLabelColor(Color.BLACK);
         pieChart.setEntryLabelTextSize(10f);
@@ -189,11 +208,22 @@ public class InventoryFragment extends Fragment {
                     updateInventoryStats(value);
                 });
     }
+    private TextView tvTotalInventory;
 
     private void updateInventoryStats(QuerySnapshot snapshot) {
         int totalCount = 0;
         int soonExpireCount = 0;
         int expiredCount = 0;
+
+        int vegCount = 0;
+        int drinkCount = 0;
+        int dairyCount = 0;
+        int otherCount = 0;
+
+        tvTotalInventory = rootView.findViewById(R.id.tvTotalInventory);
+        tvTotalInventory.setText("基於目前 0 個存貨項目統計");
+
+
 
         long todayStartMillis = getStartOfTodayMillis();
 
@@ -211,10 +241,77 @@ public class InventoryFragment extends Fragment {
             } else if (dayDifference <= 2) {
                 soonExpireCount++;
             }
+
+            String category = document.getString("category");
+
+            if (category != null) {
+                switch (category) {
+
+                    case "蔬菜":
+                        vegCount++;
+                        break;
+
+                    case "肉類":
+                        drinkCount++;
+                        break;
+
+                    case "乳製品":
+                        dairyCount++;
+                        break;
+
+                    default:
+                        otherCount++;
+                        break;
+                }
+            }
         }
 
+        int vegPercent = 0;
+        int drinkPercent = 0;
+        int dairyPercent = 0;
+        int otherPercent = 0;
+
+        if (totalCount > 0) {
+
+            vegPercent =
+                    vegCount * 100 / totalCount;
+
+            drinkPercent =
+                    drinkCount * 100 / totalCount;
+
+            dairyPercent =
+                    dairyCount * 100 / totalCount;
+
+            otherPercent =
+                    otherCount * 100 / totalCount;
+        }
+
+
+        setItem(pbVeg, tvVegPercent, vegPercent);
+
+        setItem(pbDrink, tvDrinkPercent, drinkPercent);
+
+        setItem(pbDairy, tvDairyPercent, dairyPercent);
+
+        setItem(pbOther, tvOtherPercent, otherPercent);
+        // 更新文字
         tvSoonExpireCount.setText(soonExpireCount + " 件");
         tvWasteRate.setText(formatWasteRate(expiredCount, totalCount));
+        tvTotalInventory.setText("基於目前 " + totalCount + " 個存貨項目統計");
+
+// 更新 ProgressBar
+        setItem(pbVeg, tvVegPercent, vegPercent);
+        setItem(pbDrink, tvDrinkPercent, drinkPercent);
+        setItem(pbDairy, tvDairyPercent, dairyPercent);
+        setItem(pbOther, tvOtherPercent, otherPercent);
+
+// 更新 PieChart
+        setupChart(
+                vegCount,
+                otherCount,
+                drinkCount,
+                dairyCount
+        );
     }
 
     private Date extractExpirationDate(Object value) {
